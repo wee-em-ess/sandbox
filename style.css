@@ -1,0 +1,105 @@
+#container {
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width:100%;
+    height: 100vh;
+    position: relative;
+}
+
+
+#toolbar {
+
+    width: 180px;
+    height: 90vh;
+    display:flex;
+    flex-direction:column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(22, 22, 22);
+    position: absolute;
+    opacity: 1;
+    border-radius: 8px;;
+    cursor:pointer;
+    pointer-events: auto;
+    transition: transform 0.3s ease-out 0s;
+
+}
+
+.hide-options {
+    transform: translateX(-155px);
+    cursor: none !important;
+    pointer-events: none !important;
+    visibility: hidden;
+}
+
+#display {
+
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: lightgrey;
+
+}
+
+#drawing-board {
+    width:100%;
+    height:100vh;
+    align-self: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="5" fill="none" stroke="black" stroke-width="1"/></svg>') 16 16, auto;
+    background-color: white;
+}
+
+
+.button {
+
+    border-radius: 4px;
+    width: 150px;
+    min-height:26px;
+    background-color: rgb(52, 52, 52);
+    color: rgb(110, 110, 110);
+    border: none;
+    margin: 5px;
+    cursor: inherit;
+    pointer-events: inherit;
+
+}
+
+.button:hover {
+
+    color: black;
+
+}
+
+.button:active {
+
+    background-color: yellow;
+
+}
+
+
+.button-selected {
+
+    color: black;
+    background-color: yellow;
+    
+}
+
+#toggle-panel {
+
+    position:absolute;
+    bottom:auto;
+    bottom:3px;
+    right:3px;
+    width:15px;
+    cursor:pointer;
+    pointer-events:auto;
+    opacity:1 !important;
+    visibility: visible;
+
+}

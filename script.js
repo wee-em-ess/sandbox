@@ -19,7 +19,7 @@ const canvasFlags = {
     isNewStrokes: false,
     isBgImg: false,
 	isGuides: false,
-    isPressure:false,
+    isPressure: false,
     isTouch: false,
     isThrottle: false,
     isRejectPalm: false,
@@ -29,7 +29,7 @@ const canvasFlags = {
 const canvasProps = {
     lineCap: "round",
     lineJoin: "bevel",
-    tipWidth: 0.5,
+    tipWidth: 2,
 	tipPush: 0,
     strokeOpacity: 1,
 	strokeScale: 1,
@@ -98,8 +98,22 @@ const target = event.target;
 
     if (target && target.id === "palmSlider") {
         
-        canvasProps.palmRadius = target.value;
-        console.log (target.value);
+        canvasProps.palmRadius = target.value/2;
+        console.log (target.value/2);
+
+    }
+
+    if (target && target.id === "opacitySlider") {
+        
+        canvasProps.strokeOpacity = target.value/100;
+        console.log (target.value/2);
+
+    }
+
+    if (target && target.id === "strokeSlider") {
+        
+        canvasProps.tipWidth = target.value/10 ;
+        console.log (target.value/2);
 
     }
 
@@ -220,15 +234,16 @@ function handleStartDrawing(e) {
     let x, y;
     let validTouches;
 
-    if (e.touches) {           
+    if (e.touches) {  
+        
 
-        if (!canvasFlags.isPalmTouch) {
+        if (!canvasFlags.isRejectPalm) {
             
-            const validTouches = Array.from(e.touches)}
+            validTouches = Array.from(e.touches)}
         
         else {
             
-            const validTouches = Array.from(e.touches).filter(touch => !isPalmTouch(touch));
+            validTouches = Array.from(e.touches).filter(touch => !isPalmTouch(touch, canvasProps.palmRadius));
             
         }
         
@@ -256,25 +271,27 @@ function handleStartDrawing(e) {
         
         x = (validTouches[0].clientX - cnv_X) * cnvScale;
         y = (validTouches[0].clientY - cnv_Y) * cnvScale;
+        
                     
     } else {
 				
 			pressure = 1;
 			x = e.offsetX * cnvScale;
 			y = e.offsetY * cnvScale;
+            device = "Mouse"
 			
-		}
+	}
 
     
 	canvasFlags.isDrawing = true;
 
-    if (pType === "pV1") {canvasProps.tipPush = pressure;}    
-	else if (pType === "pV2") {canvasProps.tipPush = Math.log(pressure + 1) * 40;}
+    if (pType === "pV1") {canvasProps.tipPush = pressure * canvasProps.tipWidth;}    
+	else if (pType === "pV2") {canvasProps.tipPush = Math.log(pressure + 1) * canvasProps.tipWidth;}
     else if (pType === "pV3") {canvasProps.tipPush = canvasProps.smoothingFactor * canvasProps.tipWidth + (1 - canvasProps.smoothingFactor) * (pressure * canvasProps.tipWidth);}
     else if (pType === "pV4") {canvasProps.tipPush = Math.pow(pressure, 2) * canvasProps.tipWidth;}
     else if (pType === "pV5") {canvasProps.tipPush = (Math.exp(pressure) - 1) / (Math.exp(1) - 1) * canvasProps.tipWidth;}
 
-	const w = (Math.round(canvasProps.tipPush * canvasProps.tipWidth * canvasProps.strokeScale * 10) / 10);
+	const w = (Math.round(canvasProps.tipPush * canvasProps.strokeScale * 10) / 10);
 
 	x = (Math.round(x * 10) / 10);
 	y = (Math.round(y * 10) / 10);
@@ -288,10 +305,14 @@ function handleStartDrawing(e) {
 	/// calling Draw Function ///
 	canvasDraw(points, context, 1);
 
+    const touch = e.touches ? e.touches[0] : null
     info.innerHTML = `
         device = ${device} <br/>
         pressure = ${pressure} <br/>
         calculatedForce = ${canvasProps.tipPush} <br/>
+      `
+    if (touch) {
+      touches.innerHTML = `
         touchType = ${touch.touchType} ${touch.touchType === 'direct' ? 'Touch' : 'Device'} <br/>
         radiusX = ${touch.radiusX} <br/>
         radiusY = ${touch.radiusY} <br/>
@@ -299,7 +320,7 @@ function handleStartDrawing(e) {
         altitudeAngle = ${touch.altitudeAngle} <br/>
         azimuthAngle = ${touch.azimuthAngle} <br/>
       `
-
+    }
 }
 
 //------------------------------------------------------------------------------------//
@@ -316,19 +337,24 @@ function handleKeepDrawing(e) {
 
 		if (e.touches) {           
 
-            if (!canvasFlags.isPalmTouch) {
+            if (!canvasFlags.isRejectPalm && canvasFlags.isTouch) {
                 
-                const validTouches = Array.from(e.touches)}
+                validTouches = Array.from(e.touches)}
             
-            else {
+            else if (canvasFlags.isRejectPalm && canvasFlags.isTouch) {
                 
-                const validTouches = Array.from(e.touches).filter(touch => !isPalmTouch(touch));
+                validTouches = Array.from(e.touches).filter(touch => !isPalmTouch(touch, canvasProps.palmRadius));
+                
+            }
+
+            else if (!canvasFlags.isTouch && canvasFlags.isRejectPalm) {
+                
+                validTouches = Array.from(e.touches).filter(touch => !isPalmTouch(touch, 2 ));
                 
             }
             
-            
             if (validTouches.length === 0 || validTouches.length >= 2 ) { return }
-
+            
         }
 
 		e.preventDefault();
@@ -360,14 +386,14 @@ function handleKeepDrawing(e) {
 		}
 
         
-		if (pType === "pV1") {canvasProps.tipPush = pressure;}
-		else if (pType === "pV2") {canvasProps.tipPush = Math.log(pressure + 1) * 40 * 0.2 + canvasProps.tipPush * 0.8; }
+		if (pType === "pV1") {canvasProps.tipPush = pressure * canvasProps.tipWidth;}
+		else if (pType === "pV2") {canvasProps.tipPush = Math.log(pressure + 1) * canvasProps.tipWidth * 0.2 + canvasProps.tipPush * 0.8; }
         else if (pType === "pV3") {canvasProps.tipPush = canvasProps.smoothingFactor * canvasProps.tipWidth + (1 - canvasProps.smoothingFactor) * (pressure * canvasProps.tipWidth);}
         else if (pType === "pV4") {canvasProps.tipPush = Math.pow(pressure, 2) * canvasProps.tipWidth;}
         else if (pType === "pV5") {canvasProps.tipPush = (Math.exp(pressure) - 1) / (Math.exp(1) - 1) * canvasProps.tipWidth;}
 
 
-		const w = (Math.round(canvasProps.tipPush * canvasProps.tipWidth * canvasProps.strokeScale * 10) / 10);
+		const w = (Math.round(canvasProps.tipPush * canvasProps.strokeScale * 10) / 10);
 		x = (Math.round(x * 10) / 10);
 		y = (Math.round(y * 10) / 10);
 		// const c = `rgba(${parseInt(canvasProps.strokeColor.slice(1,3),16)},${parseInt(canvasProps.strokeColor.slice(3,5),16)},${parseInt(canvasProps.strokeColor.slice(5,7),16)},${canvasProps.strokeOpacity})`;
@@ -378,18 +404,22 @@ function handleKeepDrawing(e) {
 		/// calling Draw Function ///
 		canvasDraw(points, context, 1);
 
-   
+        const touch = e.touches ? e.touches[0] : null
         info.innerHTML = `
-        device = ${device} <br/>
-        pressure = ${pressure} <br/>
-        calculatedForce = ${canvasProps.tipPush} <br/>
-        touchType = ${touch.touchType} ${touch.touchType === 'direct' ? 'Touch' : 'Device'} <br/>
-        radiusX = ${touch.radiusX} <br/>
-        radiusY = ${touch.radiusY} <br/>
-        rotationAngle = ${touch.rotationAngle} <br/>
-        altitudeAngle = ${touch.altitudeAngle} <br/>
-        azimuthAngle = ${touch.azimuthAngle} <br/>
-      `
+            device = ${device} <br/>
+            pressure = ${pressure} <br/>
+            calculatedForce = ${canvasProps.tipPush} <br/>
+          `
+        if (touch) {
+          touches.innerHTML = `
+            touchType = ${touch.touchType} ${touch.touchType === 'direct' ? 'Touch' : 'Device'} <br/>
+            radiusX = ${touch.radiusX} <br/>
+            radiusY = ${touch.radiusY} <br/>
+            rotationAngle = ${touch.rotationAngle} <br/>
+            altitudeAngle = ${touch.altitudeAngle} <br/>
+            azimuthAngle = ${touch.azimuthAngle} <br/>
+          `
+        }
 
 }
 
@@ -447,10 +477,10 @@ function handlePauseDrawing(e) {
 
 
 // Helper function for palm rejection - // Handle Touch Events - Palm Rejection + Apple Pencil
-function isPalmTouch(touch) {
+function isPalmTouch(touch, radius) {
 
     // Example heuristic: Reject touches with large radii
-    return touch.radiusX > canvasProps.palmRadius || touch.radiusY > canvasProps.palmRadius;
+    return touch.radiusX > radius || touch.radiusY > radius;
 
 }
 

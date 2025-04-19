@@ -139,6 +139,13 @@ label {
     
 }
 
+#opacitySlider, #strokeSlider {
+
+    margin: 10px;
+    width: 148px;
+    
+}
+
 #force-type,
 #guide-type {
 

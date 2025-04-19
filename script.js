@@ -1,8 +1,8 @@
 const canvas = document.getElementById("drawing-board");
 const context = canvas.getContext("2d");
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = canvas.clientWidth;
+canvas.height = canvas.clientHeight;
 
 const container = document.getElementById("container");
 const toolbar = document.getElementById("toolbar");
@@ -23,6 +23,7 @@ const canvasFlags = {
     isTouch: false,
     isThrottle: false,
     isRejectPalm: false,
+    isDockOpen: true
 };
 
 // Canvas Properties Object
@@ -65,7 +66,8 @@ const target = event.target;
     if (target && target.id === "toggle-panel") {
     
         toolbar.classList.toggle("hide-options");
-
+        if (canvasFlags.isDockOpen) {canvasFlags.isDockOpen = false}
+        else {canvasFlags.isDockOpen = true}
     }
 
     if (target && target.id === "clear-canvas") {
@@ -234,22 +236,26 @@ function handleStartDrawing(e) {
     let x, y;
     let validTouches;
 
-    if (e.touches) {  
-        
+    if (e.touches) {           
 
-        if (!canvasFlags.isRejectPalm) {
+        if (!canvasFlags.isRejectPalm && canvasFlags.isTouch) {
             
             validTouches = Array.from(e.touches)}
         
-        else {
+        else if (canvasFlags.isRejectPalm && canvasFlags.isTouch) {
             
             validTouches = Array.from(e.touches).filter(touch => !isPalmTouch(touch, canvasProps.palmRadius));
             
         }
-        
+
+        else if (!canvasFlags.isTouch && canvasFlags.isRejectPalm) {
+            
+            validTouches = Array.from(e.touches).filter(touch => !isPalmTouch(touch, 2 ));
+            
+        }
         
         if (validTouches.length === 0 || validTouches.length >= 2 ) { return }
-
+        
     }
 
     e.preventDefault();
@@ -257,7 +263,12 @@ function handleStartDrawing(e) {
     const cnv_X = canvas.getBoundingClientRect().left
     const cnv_Y = canvas.getBoundingClientRect().top
 
-
+    if (canvasFlags.isDockOpen) {
+        
+        toolbar.classList.toggle("hide-options");
+        canvasFlags.isDockOpen = false
+    }
+   
 
     if (validTouches && validTouches[0] && typeof validTouches[0]["force"] !== "undefined") {
 
@@ -271,7 +282,7 @@ function handleStartDrawing(e) {
         
         x = (validTouches[0].clientX - cnv_X) * cnvScale;
         y = (validTouches[0].clientY - cnv_Y) * cnvScale;
-        
+
                     
     } else {
 				

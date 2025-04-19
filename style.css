@@ -1,3 +1,10 @@
+p,
+label {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+    color: rgb(110, 110, 110);
+}
+
 #container {
 
     display: flex;
@@ -10,7 +17,7 @@
 
 
 #toolbar {
-
+    
     width: 180px;
     height: 90vh;
     display:flex;
@@ -20,10 +27,24 @@
     background-color: rgb(22, 22, 22);
     position: absolute;
     opacity: 1;
-    border-radius: 4px;;
+    border-radius: 4px;
     cursor:pointer;
     pointer-events: auto;
     transition: transform 0.3s ease-out 0s;
+
+}
+
+.section {
+
+    width: 165px;
+    display:flex;
+    flex-direction:column;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid rgb(40, 40, 40);
+    border-radius: 4px;
+    margin: 3px;
+    padding: 5px 0px;
 
 }
 
@@ -42,6 +63,17 @@
     align-items: center;
     background-color: lightgrey;
 
+}
+
+#info {
+
+    position:absolute;
+    top: 0px;
+    left: 0px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+    cursor: none;
+    pointer-events: none;
 }
 
 #drawing-board {
@@ -88,6 +120,34 @@
     color: black;
     background-color: yellow;
     
+}
+
+.radio {
+
+    /* min-height:14px; */
+    margin-top:5px;
+    margin-bottom:5px;
+    background: yellow;
+
+}
+
+
+#pSlider, #palmSlider {
+
+    margin: 16px;
+    width: 148px;
+    
+}
+
+#force-type,
+#guide-type {
+
+    
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    
+
 }
 
 #toggle-panel {

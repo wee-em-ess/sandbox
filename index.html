@@ -14,13 +14,19 @@
 
         <div id="toolbar">
 
+
             <div class ="section">
+                <button class= "button" id="dynamicOpacity">Dynamic Opacity</button>
                 <input type="range" id="opacitySlider" min="0" max="100" value="100">
+
+                <button class= "button" id="dynamicWidth">Dynamic Width</button>
                 <input type="range" id="strokeSlider" min="0" max="100" value="50">
 
             </div>
 
             <div class ="section">
+
+                
                 <button class= "button" id="toggle-panel">:</button>
                 <button class= "button" id="pressure">Pressure</button>
                 <input type="range" id="pSlider" min="0" max="100" value="50">
@@ -32,6 +38,18 @@
                 <input type="radio" class= "radio" id="pV4" name="pType" value="pV4">
                 <input type="radio" class= "radio" id="pV5" name="pType" value="pV5">
                 </div>
+            </div>           
+
+            <div class ="section">
+                <button class= "button" id="touch">Touch</button>
+                <button class= "button" id="reject-palm">Reject Palm</button>
+                <input type="range" id="palmSlider" min="0" max="100" value="100">
+            </div>
+
+            <div class ="section">
+                <button class= "button" id="marker">Marker</button>
+                <button class= "button" id="highlighter">Highlighter</button>
+
             </div>
 
             <div class ="section">
@@ -42,16 +60,13 @@
                 </div>
             </div>
 
-            
-
-            <div class ="section">
-                <button class= "button" id="reject-palm">Reject Palm</button>
-                <input type="range" id="palmSlider" min="0" max="100" value="100">
-            </div>
-
-            <button class= "button" id="touch">Touch</button>
+           
             <button class= "button" id="throttle-stroke">Throttle Stroke</button>
             <button class= "button" id="clear-canvas">Clear Canvas</button>
+
+            
+
+
         </div>
 
         <div id="display">

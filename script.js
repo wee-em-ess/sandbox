@@ -20,6 +20,8 @@ const canvasFlags = {
     isBgImg: false,
 	isGuides: false,
     isPressure: false,
+    isDynamicOpacity: false,
+    isDynamicWidth: false,
     isTouch: false,
     isThrottle: false,
     isRejectPalm: false,
@@ -32,6 +34,7 @@ const canvasProps = {
     lineJoin: "bevel",
     tipWidth: 2,
 	tipPush: 0,
+    tipPushOpacity: 0,
     strokeOpacity: 1,
 	strokeScale: 1,
     globalOpacity: 1,
@@ -76,6 +79,22 @@ const target = event.target;
 
     }
 
+    if (target && target.id === "dynamicOpacity") {
+    
+        target.classList.toggle("button-selected");
+        if (canvasFlags.isDynamicOpacity) {canvasFlags.isDynamicOpacity = false}
+        else {canvasFlags.isDynamicOpacity = true}
+
+    }
+
+    if (target && target.id === "dynamicWidth") {
+    
+        target.classList.toggle("button-selected");
+        if (canvasFlags.isDynamicWidth) {canvasFlags.isDynamicWidth = false}
+        else {canvasFlags.isDynamicWidth = true}
+
+    }
+
     if (target && target.id === "pressure") {
     
         target.classList.toggle("button-selected");
@@ -108,14 +127,14 @@ const target = event.target;
     if (target && target.id === "opacitySlider") {
         
         canvasProps.strokeOpacity = target.value/100;
-        console.log (target.value/2);
+        console.log (target.value/100);
 
     }
 
     if (target && target.id === "strokeSlider") {
         
-        canvasProps.tipWidth = target.value/10 ;
-        console.log (target.value/2);
+        canvasProps.tipWidth = target.value;
+        console.log (target.value);
 
     }
 
@@ -225,7 +244,7 @@ function clearCanvas (context, canvas) {
 //------------------------------------------------------------------------------------//
 
 
-let c;
+//let c;
 let cnvScale = 1;
 let device;
 
@@ -233,7 +252,7 @@ let device;
 function handleStartDrawing(e) {
 
     let pressure = 1;
-    let x, y;
+    let x, y, c;
     let validTouches;
 
     if (e.touches) {           
@@ -253,6 +272,8 @@ function handleStartDrawing(e) {
             validTouches = Array.from(e.touches).filter(touch => !isPalmTouch(touch, 2 ));
             
         }
+  
+        else { return }
         
         if (validTouches.length === 0 || validTouches.length >= 2 ) { return }
         
@@ -296,17 +317,20 @@ function handleStartDrawing(e) {
     
 	canvasFlags.isDrawing = true;
 
-    if (pType === "pV1") {canvasProps.tipPush = pressure * canvasProps.tipWidth;}    
-	else if (pType === "pV2") {canvasProps.tipPush = Math.log(pressure + 1) * canvasProps.tipWidth;}
-    else if (pType === "pV3") {canvasProps.tipPush = canvasProps.smoothingFactor * canvasProps.tipWidth + (1 - canvasProps.smoothingFactor) * (pressure * canvasProps.tipWidth);}
-    else if (pType === "pV4") {canvasProps.tipPush = Math.pow(pressure, 2) * canvasProps.tipWidth;}
-    else if (pType === "pV5") {canvasProps.tipPush = (Math.exp(pressure) - 1) / (Math.exp(1) - 1) * canvasProps.tipWidth;}
+    if (canvasFlags.isDynamicWidth && pType === "pV1") {canvasProps.tipPush = pressure * canvasProps.tipWidth;}    
+	else if (canvasFlags.isDynamicWidth && pType === "pV2") {canvasProps.tipPush = Math.log(pressure + 1) * canvasProps.tipWidth;}
+    else if (canvasFlags.isDynamicWidth && pType === "pV3") {canvasProps.tipPush = canvasProps.smoothingFactor * canvasProps.tipWidth + (1 - canvasProps.smoothingFactor) * (pressure * canvasProps.tipWidth);}
+    else if (canvasFlags.isDynamicWidth && pType === "pV4") {canvasProps.tipPush = Math.pow(pressure, 2) * canvasProps.tipWidth;}
+    else if (canvasFlags.isDynamicWidth && pType === "pV5") {canvasProps.tipPush = (Math.exp(pressure) - 1) / (Math.exp(1) - 1) * canvasProps.tipWidth;}
+
+    if (canvasFlags.isDynamicOpacity) { canvasProps.tipPushOpacity = Math.log(pressure + 1) * canvasProps.strokeOpacity}
+    else { canvasProps.tipPushOpacity = canvasProps.strokeOpacity }
 
 	const w = (Math.round(canvasProps.tipPush * canvasProps.strokeScale * 10) / 10);
 
 	x = (Math.round(x * 10) / 10);
 	y = (Math.round(y * 10) / 10);
-	c = `rgba(${parseInt(canvasProps.strokeColor.slice(1,3),16)},${parseInt(canvasProps.strokeColor.slice(3, 5),16)},${parseInt(canvasProps.strokeColor.slice(5,7),16)},${canvasProps.strokeOpacity})`;
+	c = `rgba(${parseInt(canvasProps.strokeColor.slice(1,3),16)},${parseInt(canvasProps.strokeColor.slice(3, 5),16)},${parseInt(canvasProps.strokeColor.slice(5,7),16)},${canvasProps.tipPushOpacity})`;
 	const lineCap = canvasProps.lineCap;
 	const lineJoin = canvasProps.lineJoin;
 	const blendingMode = canvasProps.blendingMode;
@@ -320,7 +344,12 @@ function handleStartDrawing(e) {
     info.innerHTML = `
         device = ${device} <br/>
         pressure = ${pressure} <br/>
-        calculatedForce = ${canvasProps.tipPush} <br/>
+        pressureSmoothening = ${canvasProps.smoothingFactor} <br/>
+        strokeWidth = ${canvasProps.tipWidth} <br/>
+        calculatedWidth = ${canvasProps.tipPush} <br/>
+        strokeOpacity = ${canvasProps.strokeOpacity} <br/>
+        calculatedOpacity = ${canvasProps.tipPushOpacity} <br/>       
+        palmRejectWidth = ${canvasProps.palmRadius} <br/>
       `
     if (touch) {
       touches.innerHTML = `
@@ -343,7 +372,7 @@ function handleKeepDrawing(e) {
 		if (!canvasFlags.isDrawing) return;
 
         let pressure = 1;
-		let x, y;
+		let x, y, c;
         let validTouches;
 
 		if (e.touches) {           
@@ -363,6 +392,8 @@ function handleKeepDrawing(e) {
                 validTouches = Array.from(e.touches).filter(touch => !isPalmTouch(touch, 2 ));
                 
             }
+
+            else { return }
             
             if (validTouches.length === 0 || validTouches.length >= 2 ) { return }
             
@@ -397,17 +428,19 @@ function handleKeepDrawing(e) {
 		}
 
         
-		if (pType === "pV1") {canvasProps.tipPush = pressure * canvasProps.tipWidth;}
-		else if (pType === "pV2") {canvasProps.tipPush = Math.log(pressure + 1) * canvasProps.tipWidth * 0.2 + canvasProps.tipPush * 0.8; }
-        else if (pType === "pV3") {canvasProps.tipPush = canvasProps.smoothingFactor * canvasProps.tipWidth + (1 - canvasProps.smoothingFactor) * (pressure * canvasProps.tipWidth);}
-        else if (pType === "pV4") {canvasProps.tipPush = Math.pow(pressure, 2) * canvasProps.tipWidth;}
-        else if (pType === "pV5") {canvasProps.tipPush = (Math.exp(pressure) - 1) / (Math.exp(1) - 1) * canvasProps.tipWidth;}
+		if (canvasFlags.isDynamicWidth && pType === "pV1") {canvasProps.tipPush = pressure * canvasProps.tipWidth;}
+		else if (canvasFlags.isDynamicWidth && pType === "pV2") {canvasProps.tipPush = Math.log(pressure + 1) * canvasProps.tipWidth * 0.2 + canvasProps.tipPush * 0.8; }
+        else if (canvasFlags.isDynamicWidth && pType === "pV3") {canvasProps.tipPush = canvasProps.smoothingFactor * canvasProps.tipWidth + (1 - canvasProps.smoothingFactor) * (pressure * canvasProps.tipWidth);}
+        else if (canvasFlags.isDynamicWidth && pType === "pV4") {canvasProps.tipPush = Math.pow(pressure, 2) * canvasProps.tipWidth;}
+        else if (canvasFlags.isDynamicWidth && pType === "pV5") {canvasProps.tipPush = (Math.exp(pressure) - 1) / (Math.exp(1) - 1) * canvasProps.tipWidth;}
 
+        if (canvasFlags.isDynamicOpacity) { canvasProps.tipPushOpacity = Math.log(pressure + 1) * canvasProps.strokeOpacity}
+        else { canvasProps.tipPushOpacity = canvasProps.strokeOpacity }
 
 		const w = (Math.round(canvasProps.tipPush * canvasProps.strokeScale * 10) / 10);
 		x = (Math.round(x * 10) / 10);
 		y = (Math.round(y * 10) / 10);
-		// const c = `rgba(${parseInt(canvasProps.strokeColor.slice(1,3),16)},${parseInt(canvasProps.strokeColor.slice(3,5),16)},${parseInt(canvasProps.strokeColor.slice(5,7),16)},${canvasProps.strokeOpacity})`;
+		c = `rgba(${parseInt(canvasProps.strokeColor.slice(1,3),16)},${parseInt(canvasProps.strokeColor.slice(3,5),16)},${parseInt(canvasProps.strokeColor.slice(5,7),16)},${canvasProps.tipPushOpacit})`;
 
 		// Push data into points object
 		points.push({x,y,w,c});
@@ -417,10 +450,15 @@ function handleKeepDrawing(e) {
 
         const touch = e.touches ? e.touches[0] : null
         info.innerHTML = `
-            device = ${device} <br/>
-            pressure = ${pressure} <br/>
-            calculatedForce = ${canvasProps.tipPush} <br/>
-          `
+        device = ${device} <br/>
+        pressure = ${pressure} <br/>
+        pressureSmoothening = ${canvasProps.smoothingFactor} <br/>
+        strokeWidth = ${canvasProps.tipWidth} <br/>
+        calculatedWidth = ${canvasProps.tipPush} <br/>
+        strokeOpacity = ${canvasProps.strokeOpacity} <br/>
+        calculatedOpacity = ${canvasProps.tipPushOpacity} <br/>       
+        palmRejectWidth = ${canvasProps.palmRadius} <br/> 
+      `
         if (touch) {
           touches.innerHTML = `
             touchType = ${touch.touchType} ${touch.touchType === 'direct' ? 'Touch' : 'Device'} <br/>

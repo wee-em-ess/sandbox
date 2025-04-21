@@ -317,11 +317,12 @@ function handleStartDrawing(e) {
     
 	canvasFlags.isDrawing = true;
 
-    if (canvasFlags.isDynamicWidth && pType === "pV1") {canvasProps.tipPush = pressure * canvasProps.tipWidth;}    
-	else if (canvasFlags.isDynamicWidth && pType === "pV2") {canvasProps.tipPush = Math.log(pressure + 1) * canvasProps.tipWidth;}
-    else if (canvasFlags.isDynamicWidth && pType === "pV3") {canvasProps.tipPush = canvasProps.smoothingFactor * canvasProps.tipWidth + (1 - canvasProps.smoothingFactor) * (pressure * canvasProps.tipWidth);}
-    else if (canvasFlags.isDynamicWidth && pType === "pV4") {canvasProps.tipPush = Math.pow(pressure, 2) * canvasProps.tipWidth;}
-    else if (canvasFlags.isDynamicWidth && pType === "pV5") {canvasProps.tipPush = (Math.exp(pressure) - 1) / (Math.exp(1) - 1) * canvasProps.tipWidth;}
+    if (canvasFlags.isDynamicWidth && pType === "pV1") {canvasProps.tipPush = pressure * canvasProps.tipWidth}    
+	else if (canvasFlags.isDynamicWidth && pType === "pV2") {canvasProps.tipPush = Math.log(pressure + 1) * canvasProps.tipWidth}
+    else if (canvasFlags.isDynamicWidth && pType === "pV3") {canvasProps.tipPush = canvasProps.smoothingFactor * canvasProps.tipWidth + (1 - canvasProps.smoothingFactor) * (pressure * canvasProps.tipWidth)}
+    else if (canvasFlags.isDynamicWidth && pType === "pV4") {canvasProps.tipPush = Math.pow(pressure, 2) * canvasProps.tipWidth}
+    else if (canvasFlags.isDynamicWidth && pType === "pV5") {canvasProps.tipPush = (Math.exp(pressure) - 1) / (Math.exp(1) - 1) * canvasProps.tipWidth}
+    else {canvasProps.tipPush = canvasProps.tipWidth}
 
     if (canvasFlags.isDynamicOpacity) { canvasProps.tipPushOpacity = Math.log(pressure + 1) * canvasProps.strokeOpacity}
     else { canvasProps.tipPushOpacity = canvasProps.strokeOpacity }
@@ -428,11 +429,12 @@ function handleKeepDrawing(e) {
 		}
 
         
-		if (canvasFlags.isDynamicWidth && pType === "pV1") {canvasProps.tipPush = pressure * canvasProps.tipWidth;}
-		else if (canvasFlags.isDynamicWidth && pType === "pV2") {canvasProps.tipPush = Math.log(pressure + 1) * canvasProps.tipWidth * 0.2 + canvasProps.tipPush * 0.8; }
-        else if (canvasFlags.isDynamicWidth && pType === "pV3") {canvasProps.tipPush = canvasProps.smoothingFactor * canvasProps.tipWidth + (1 - canvasProps.smoothingFactor) * (pressure * canvasProps.tipWidth);}
-        else if (canvasFlags.isDynamicWidth && pType === "pV4") {canvasProps.tipPush = Math.pow(pressure, 2) * canvasProps.tipWidth;}
-        else if (canvasFlags.isDynamicWidth && pType === "pV5") {canvasProps.tipPush = (Math.exp(pressure) - 1) / (Math.exp(1) - 1) * canvasProps.tipWidth;}
+		if (canvasFlags.isDynamicWidth && pType === "pV1") {canvasProps.tipPush = pressure * canvasProps.tipWidth}
+		else if (canvasFlags.isDynamicWidth && pType === "pV2") {canvasProps.tipPush = Math.log(pressure + 1) * canvasProps.tipWidth * 0.2 + canvasProps.tipPush * 0.8 }
+        else if (canvasFlags.isDynamicWidth && pType === "pV3") {canvasProps.tipPush = canvasProps.smoothingFactor * canvasProps.tipWidth + (1 - canvasProps.smoothingFactor) * (pressure * canvasProps.tipWidth)}
+        else if (canvasFlags.isDynamicWidth && pType === "pV4") {canvasProps.tipPush = Math.pow(pressure, 2) * canvasProps.tipWidth}
+        else if (canvasFlags.isDynamicWidth && pType === "pV5") {canvasProps.tipPush = (Math.exp(pressure) - 1) / (Math.exp(1) - 1) * canvasProps.tipWidth}
+        else {canvasProps.tipPush = canvasProps.tipWidth}
 
         if (canvasFlags.isDynamicOpacity) { canvasProps.tipPushOpacity = Math.log(pressure + 1) * canvasProps.strokeOpacity}
         else { canvasProps.tipPushOpacity = canvasProps.strokeOpacity }

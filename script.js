@@ -40,7 +40,7 @@ const canvasProps = {
     globalOpacity: 1,
     strokeColor: "#000000", // Crimson
 	fillColor: "#ffffff",
-    smoothingFactor: 0.5,
+    smootheningFactor: 0.5,
     palmRadius: 50,
     blendingMode: "source-over",
 	toolSize: "xsStroke",
@@ -112,7 +112,7 @@ const target = event.target;
 
     if (target && target.id === "pSlider") {
         
-        canvasProps.smoothingFactor = target.value/100;
+        canvasProps.smootheningFactor = target.value/100;
         console.log (target.value/100);
 
     }
@@ -319,7 +319,7 @@ function handleStartDrawing(e) {
 
     if (canvasFlags.isDynamicWidth && pType === "pV1") {canvasProps.tipPush = pressure * canvasProps.tipWidth}    
 	else if (canvasFlags.isDynamicWidth && pType === "pV2") {canvasProps.tipPush = Math.log(pressure + 1) * canvasProps.tipWidth}
-    else if (canvasFlags.isDynamicWidth && pType === "pV3") {canvasProps.tipPush = canvasProps.smoothingFactor * canvasProps.tipWidth + (1 - canvasProps.smoothingFactor) * (pressure * canvasProps.tipWidth)}
+    else if (canvasFlags.isDynamicWidth && pType === "pV3") {canvasProps.tipPush = canvasProps.smootheningFactor * canvasProps.tipWidth + (1 - canvasProps.smootheningFactor) * (pressure * canvasProps.tipWidth)}
     else if (canvasFlags.isDynamicWidth && pType === "pV4") {canvasProps.tipPush = Math.pow(pressure, 2) * canvasProps.tipWidth}
     else if (canvasFlags.isDynamicWidth && pType === "pV5") {canvasProps.tipPush = (Math.exp(pressure) - 1) / (Math.exp(1) - 1) * canvasProps.tipWidth}
     else {canvasProps.tipPush = canvasProps.tipWidth}
@@ -344,8 +344,12 @@ function handleStartDrawing(e) {
     const touch = e.touches ? e.touches[0] : null
     info.innerHTML = `
         device = ${device} <br/>
+        windowPixelDensity = ${window.devicePixelRatio} <br/>
+        windowScreenWidth = ${window.screen.width} <br/>
+        canvasWidth = ${canvas.width} <br/>
+        canvasCalcWidth = ${canvas.clientWidth} <br/>
         pressure = ${pressure} <br/>
-        pressureSmoothening = ${canvasProps.smoothingFactor} <br/>
+        pressureSmoothening = ${canvasProps.smootheningFactor} <br/>
         strokeWidth = ${canvasProps.tipWidth} <br/>
         calculatedWidth = ${canvasProps.tipPush} <br/>
         strokeOpacity = ${canvasProps.strokeOpacity} <br/>
@@ -431,7 +435,7 @@ function handleKeepDrawing(e) {
         
 		if (canvasFlags.isDynamicWidth && pType === "pV1") {canvasProps.tipPush = pressure * canvasProps.tipWidth}
 		else if (canvasFlags.isDynamicWidth && pType === "pV2") {canvasProps.tipPush = Math.log(pressure + 1) * canvasProps.tipWidth * 0.2 + canvasProps.tipPush * 0.8 }
-        else if (canvasFlags.isDynamicWidth && pType === "pV3") {canvasProps.tipPush = canvasProps.smoothingFactor * canvasProps.tipWidth + (1 - canvasProps.smoothingFactor) * (pressure * canvasProps.tipWidth)}
+        else if (canvasFlags.isDynamicWidth && pType === "pV3") {canvasProps.tipPush = canvasProps.smootheningFactor * canvasProps.tipWidth + (1 - canvasProps.smootheningFactor) * (pressure * canvasProps.tipWidth)}
         else if (canvasFlags.isDynamicWidth && pType === "pV4") {canvasProps.tipPush = Math.pow(pressure, 2) * canvasProps.tipWidth}
         else if (canvasFlags.isDynamicWidth && pType === "pV5") {canvasProps.tipPush = (Math.exp(pressure) - 1) / (Math.exp(1) - 1) * canvasProps.tipWidth}
         else {canvasProps.tipPush = canvasProps.tipWidth}
@@ -442,7 +446,7 @@ function handleKeepDrawing(e) {
 		const w = (Math.round(canvasProps.tipPush * canvasProps.strokeScale * 10) / 10);
 		x = (Math.round(x * 10) / 10);
 		y = (Math.round(y * 10) / 10);
-		c = `rgba(${parseInt(canvasProps.strokeColor.slice(1,3),16)},${parseInt(canvasProps.strokeColor.slice(3,5),16)},${parseInt(canvasProps.strokeColor.slice(5,7),16)},${canvasProps.tipPushOpacit})`;
+		c = `rgba(${parseInt(canvasProps.strokeColor.slice(1,3),16)},${parseInt(canvasProps.strokeColor.slice(3,5),16)},${parseInt(canvasProps.strokeColor.slice(5,7),16)},${canvasProps.tipPushOpacity})`;
 
 		// Push data into points object
 		points.push({x,y,w,c});
@@ -453,8 +457,12 @@ function handleKeepDrawing(e) {
         const touch = e.touches ? e.touches[0] : null
         info.innerHTML = `
         device = ${device} <br/>
+        windowPixelDensity = ${window.devicePixelRatio} <br/>
+        windowScreenWidth = ${window.screen.width} <br/>
+        canvasWidth = ${canvas.width} <br/>
+        canvasCalcWidth = ${canvas.clientWidth} <br/>
         pressure = ${pressure} <br/>
-        pressureSmoothening = ${canvasProps.smoothingFactor} <br/>
+        pressureSmoothening = ${canvasProps.smootheningFactor} <br/>
         strokeWidth = ${canvasProps.tipWidth} <br/>
         calculatedWidth = ${canvasProps.tipPush} <br/>
         strokeOpacity = ${canvasProps.strokeOpacity} <br/>

@@ -24,14 +24,15 @@ label {
 #toolbar {
     
     width: 180px;
-    height: 800px;
+    height: 550px;
     display:flex;
     flex-direction:column;
-    justify-content: center;
+    justify-content:flex-start;
     align-items: center;
     background-color: rgb(22, 22, 22);
     position: absolute;
     opacity: 1;
+    padding: 5px 0;
     border-radius: 4px;
     cursor:pointer;
     pointer-events: auto;
@@ -83,7 +84,7 @@ label {
 
 #touches {
     position:absolute;
-    top: 130px;
+    top: 200px;
     left: 0px;
     font-family: Arial, Helvetica, sans-serif;
     font-size: small;
